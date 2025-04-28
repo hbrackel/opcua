@@ -7,6 +7,7 @@ package ua
 import (
 	"github.com/gopcua/opcua/debug"
 	"github.com/gopcua/opcua/id"
+	"slices"
 )
 
 // eotypes contains all known extension objects.
@@ -76,9 +77,8 @@ func (e *ExtensionObject) Decode(b []byte) (int, error) {
 	typeID := e.TypeID.NodeID
 	e.Value = eotypes.New(typeID)
 	if e.Value == nil {
-		debug.Printf("ua: unknown extension object value dataType %s - returning raw byte array", typeID)
-		raw := body.Bytes()
-		e.Value = &raw
+		debug.Printf("ua: unknown extension object %s - returning raw byte array", typeID)
+		e.Value = slices.Clone(body.Bytes())
 		return buf.Pos(), buf.Error()
 	}
 
