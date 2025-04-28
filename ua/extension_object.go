@@ -78,7 +78,8 @@ func (e *ExtensionObject) Decode(b []byte) (int, error) {
 	e.Value = eotypes.New(typeID)
 	if e.Value == nil {
 		debug.Printf("ua: unknown extension object %s - returning raw byte array", typeID)
-		e.Value = slices.Clone(body.Bytes())
+		b := slices.Clone(body.Bytes())
+		e.Value = &b
 		return buf.Pos(), buf.Error()
 	}
 
