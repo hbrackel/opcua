@@ -21,6 +21,13 @@ func RegisterExtensionObject(typeID *NodeID, v interface{}) {
 	}
 }
 
+// Return the raw bytes of an ExtensionObject in its Value if the dataType encoding
+// has not been registered.
+// Return <nil> for the Value if false
+func SetReturnByteValueForUnknownExtensionObjects(b bool) {
+	eotypes.SetUdtBytes(b)
+}
+
 // These flags define the value type of an ExtensionObject.
 // They cannot be combined.
 const (
