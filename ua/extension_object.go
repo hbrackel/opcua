@@ -77,10 +77,15 @@ func (e *ExtensionObject) Decode(b []byte) (int, error) {
 	typeID := e.TypeID.NodeID
 	e.Value = eotypes.New(typeID)
 	if e.Value == nil {
-		debug.Printf("ua: unknown extension object %s - returning raw byte array", typeID)
-		b := slices.Clone(body.Bytes())
-		e.Value = &b
-		return buf.Pos(), buf.Error()
+		if eotypes.UdtBytes() {
+			debug.Printf("ua: unknown extension object %s - returning raw byte array", typeID)
+			b := slices.Clone(body.Bytes())
+			e.Value = &b
+			return buf.Pos(), buf.Error()
+		} else {
+			debug.Printf("ua: unknown extension object %s", typeID)
+			return buf.Pos(), buf.Error()
+		}
 	}
 
 	body.ReadStruct(e.Value)

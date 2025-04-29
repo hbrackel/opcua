@@ -19,19 +19,35 @@ import (
 // Types can be registered multiple times under different
 // identifiers.
 //
+// udtBytes = true instructs the decoder to return the raw bytes of a UDT structure
+// in the ExtensionObject's value in case a type registration cannot be found.
+// default: false (for backwards compatibility) returns nil as the ExtensionObject's value
+//
 // The implementation is safe for concurrent use.
 type TypeRegistry struct {
-	mu    sync.Mutex
-	types map[string]reflect.Type
-	ids   map[reflect.Type]string
+	mu       sync.Mutex
+	types    map[string]reflect.Type
+	ids      map[reflect.Type]string
+	udtBytes bool
 }
 
 // NewTypeRegistry returns a new type registry.
 func NewTypeRegistry() *TypeRegistry {
 	return &TypeRegistry{
-		types: make(map[string]reflect.Type),
-		ids:   make(map[reflect.Type]string),
+		types:    make(map[string]reflect.Type),
+		ids:      make(map[reflect.Type]string),
+		udtBytes: false,
 	}
+}
+
+func (r *TypeRegistry) UdtBytes() bool {
+	return r.udtBytes
+}
+
+func (r *TypeRegistry) SetUdtBytes(b bool) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.udtBytes = b
 }
 
 // New returns a new instance of the type with the given id.
